@@ -8,14 +8,12 @@ namespace ChatGroup.Shared.DTOs
         public string Content { get; set; } = "";
         public DateTime Timestamp { get; set; } = DateTime.Now;
         public string MessageType { get; set; } = "Text"; 
-        public string? FileData { get; set; } // Giữ lại cho file nhỏ hoặc legacy
+        public string? FileData { get; set; } 
         public string? FileName { get; set; }
         
-        // Cải tiến cho File lớn
         public string? FileUrl { get; set; }
         public string? ThumbnailBase64 { get; set; }
         
-        // Cải tiến cho Call Signaling
         public string? CallId { get; set; }
         
         // UI Binding properties

@@ -49,11 +49,11 @@ namespace ChatServer
 
             int port = GetPortFromArgs(args);
             
-            // --- BẮT ĐẦU: Nhúng HTTP Server (ASP.NET Core Web API) ---
+            // http server
             Console.WriteLine("Đang khởi động HTTP File Server tại port 5001...");
             builder.WebHost.UseUrls("http://0.0.0.0:5001");
-            
-            // Cấu hình cho phép Upload file dung lượng lớn (không giới hạn hoặc > 2GB)
+
+            // up file lớn
             builder.Services.Configure<KestrelServerOptions>(options =>
             {
                 options.Limits.MaxRequestBodySize = long.MaxValue; 
@@ -90,7 +90,7 @@ namespace ChatServer
                 string uniqueName = Guid.NewGuid().ToString() + "_" + file.FileName;
                 string physicalPath = Path.Combine(uploadPath, uniqueName);
                 
-                // Lưu streaming xuống ổ cứng (rất tối ưu, không tốn RAM)
+                // Lưu streaming xuống ổ cứng 
                 using (var stream = new FileStream(physicalPath, FileMode.Create))
                 {
                     await file.CopyToAsync(stream);
@@ -104,9 +104,8 @@ namespace ChatServer
 
             // Chạy ngầm HTTP server
             _ = app.RunAsync();
-            // --- KẾT THÚC: Nhúng HTTP Server ---
 
-            // --- BẮT ĐẦU: TCP Chat Server ---
+            // start TCP server
             TcpListener listener = new TcpListener(IPAddress.Any, port);
             listener.Start();
             Console.WriteLine($"TCP Server đã khởi động. Đang lắng nghe tại port {port}...");
@@ -180,7 +179,7 @@ namespace ChatServer
             StreamReader reader = new StreamReader(stream, System.Text.Encoding.UTF8);
             StreamWriter writer = new StreamWriter(stream, System.Text.Encoding.UTF8) { AutoFlush = true };
 
-            // -- TẢI LỊCH SỬ CHAT TỪ DATABASE KHI KẾT NỐI --
+            // save history
             try
             {
                 var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
