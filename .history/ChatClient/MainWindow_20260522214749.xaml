@@ -252,7 +252,7 @@
                     
                     <Image x:Name="PreviewImage" Grid.Column="0" MaxHeight="60" MaxWidth="60" Stretch="Uniform" Margin="0,0,8,0" Visibility="Collapsed"/>
                     <Border x:Name="PreviewVideoContainer" Grid.Column="0" MaxHeight="60" MaxWidth="60" Visibility="Collapsed" Margin="0,0,8,0" CornerRadius="4" ClipToBounds="True">
-                        <MediaElement x:Name="PreviewVideo" Stretch="Uniform" LoadedBehavior="Pause" ScrubbingEnabled="True" Volume="0" MediaOpened="MessageVideo_MediaOpened"/>
+                        <MediaElement x:Name="PreviewVideo" Stretch="Uniform" LoadedBehavior="Pause" Volume="0"/>
                     </Border>
                     <TextBlock x:Name="PreviewFileIcon" Grid.Column="0" Text="📄" FontSize="36" VerticalAlignment="Center" Margin="0,0,8,0" Visibility="Collapsed"/>
                     

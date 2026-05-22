@@ -480,10 +480,6 @@ namespace ChatClient
                 {
                     ShowPreview(openFileDialog.FileName, "Video");
                 }
-                else if (ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif" || ext == ".bmp")
-                {
-                    ShowPreview(openFileDialog.FileName, "Image");
-                }
                 else
                 {
                     ShowPreview(openFileDialog.FileName, "File");
@@ -594,14 +590,6 @@ namespace ChatClient
             UpdateSendButton();
         }
         
-        private void MessageVideo_MediaOpened(object sender, RoutedEventArgs e)
-        {
-            if (sender is System.Windows.Controls.MediaElement media)
-            {
-                media.Position = TimeSpan.FromMilliseconds(1);
-            }
-        }
-
         private async void MessageElement_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (sender is FrameworkElement element && element.Tag is ChatMessageDtos msg)

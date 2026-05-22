@@ -480,10 +480,6 @@ namespace ChatClient
                 {
                     ShowPreview(openFileDialog.FileName, "Video");
                 }
-                else if (ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif" || ext == ".bmp")
-                {
-                    ShowPreview(openFileDialog.FileName, "Image");
-                }
                 else
                 {
                     ShowPreview(openFileDialog.FileName, "File");

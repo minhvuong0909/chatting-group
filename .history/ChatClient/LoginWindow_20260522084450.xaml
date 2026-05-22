@@ -10,7 +10,7 @@
                    FontWeight="Medium" Foreground="#111827"/>
         <TextBox x:Name="ServerInputBox" Height="36" Padding="10,8"
                  FontSize="14" Margin="0,0,0,16"
-                 Text="0.tcp.ap.ngrok.io:24100"/>
+                 Text="0.tcp.ap.ngrok.io:15984"/>
 
         <!-- Username -->
         <TextBlock Text="Tên của bạn:" Margin="0,0,0,6"
