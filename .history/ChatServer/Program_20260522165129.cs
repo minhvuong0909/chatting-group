@@ -205,7 +205,6 @@ namespace ChatServer
                     // Chuyển Enum DB sang DTO
                     if (messageType == "text") messageType = "Text";
                     else if (messageType == "image") messageType = "Image";
-                    else if (messageType == "video") messageType = "Video";
                     else if (messageType == "file") messageType = "File";
                     else if (messageType == "sticker") messageType = "Sticker";
                     else if (messageType.StartsWith("call") || messageType.StartsWith("videocall")) messageType = "System";

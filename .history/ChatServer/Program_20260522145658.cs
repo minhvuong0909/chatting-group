@@ -205,7 +205,6 @@ namespace ChatServer
                     // Chuyển Enum DB sang DTO
                     if (messageType == "text") messageType = "Text";
                     else if (messageType == "image") messageType = "Image";
-                    else if (messageType == "video") messageType = "Video";
                     else if (messageType == "file") messageType = "File";
                     else if (messageType == "sticker") messageType = "Sticker";
                     else if (messageType.StartsWith("call") || messageType.StartsWith("videocall")) messageType = "System";
@@ -347,7 +346,7 @@ namespace ChatServer
 
                     FileRecord? fileRecord = null;
                     // Xử lý lưu File Record từ fileUrl hoặc fileData legacy
-                    if ((dto.MessageType == "Image" || dto.MessageType == "Video" || dto.MessageType == "File" || dto.MessageType == "Sticker") && (!string.IsNullOrEmpty(dto.FileData) || !string.IsNullOrEmpty(dto.FileUrl)))
+                    if ((dto.MessageType == "Image" || dto.MessageType == "File" || dto.MessageType == "Sticker") && (!string.IsNullOrEmpty(dto.FileData) || !string.IsNullOrEmpty(dto.FileUrl)))
                     {
                         fileRecord = new FileRecord
                         {
@@ -361,7 +360,7 @@ namespace ChatServer
                     }
 
                     string t = dto.MessageType.ToLower();
-                    if (t != "text" && t != "image" && t != "video" && t != "file" && t != "sticker" && t != "callstart" && t != "videocallstart" && t != "calljoin" && t != "callleave" && t != "callend") t = "text";
+                    if (t != "text" && t != "image" && t != "file" && t != "sticker" && t != "callstart" && t != "videocallstart" && t != "calljoin" && t != "callleave" && t != "callend") t = "text";
                     if (t == "sticker") t = "image"; 
 
                     var entity = new Message

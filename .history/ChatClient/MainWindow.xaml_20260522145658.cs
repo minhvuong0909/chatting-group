@@ -2,7 +2,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Net.Sockets;
-using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -55,59 +54,6 @@ namespace ChatClient
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
             => throw new NotImplementedException();
-    }
-
-    public class ProgressableStreamContent : HttpContent
-    {
-        private readonly HttpContent _content;
-        private readonly int _bufferSize;
-        private readonly Action<long, long> _progress;
-        private readonly long _contentLength;
-
-        public ProgressableStreamContent(HttpContent content, Action<long, long> progress)
-        {
-            _content = content;
-            _bufferSize = 81920; 
-            _progress = progress;
-            _contentLength = content.Headers.ContentLength ?? 0;
-
-            foreach (var header in content.Headers)
-            {
-                Headers.TryAddWithoutValidation(header.Key, header.Value);
-            }
-        }
-
-        protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context)
-        {
-            var buffer = new byte[_bufferSize];
-            long uploaded = 0;
-
-            using var contentStream = await _content.ReadAsStreamAsync();
-            while (true)
-            {
-                var length = await contentStream.ReadAsync(buffer, 0, buffer.Length);
-                if (length <= 0) break;
-
-                await stream.WriteAsync(buffer, 0, length);
-                uploaded += length;
-                _progress?.Invoke(uploaded, _contentLength);
-            }
-        }
-
-        protected override bool TryComputeLength(out long length)
-        {
-            length = _contentLength;
-            return true;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _content.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 
     public partial class MainWindow : Window
@@ -300,31 +246,12 @@ namespace ChatClient
                     httpClient.Timeout = Timeout.InfiniteTimeSpan; 
                     using var contentData = new MultipartFormDataContent();
                     await using var fileStream = new FileStream(_pendingFilePath, FileMode.Open, FileAccess.Read);
-                    
-                    var streamContent = new StreamContent(fileStream);
-                    var progressContent = new ProgressableStreamContent(streamContent, (uploaded, total) => 
-                    {
-                        Application.Current.Dispatcher.InvokeAsync(() => 
-                        {
-                            if (total > 0)
-                            {
-                                UploadProgressBar.Value = (double)uploaded / total * 100;
-                                double uploadedMb = uploaded / (1024.0 * 1024.0);
-                                double totalMb = total / (1024.0 * 1024.0);
-                                UploadProgressText.Text = $"Đang gửi: {uploadedMb:F1} MB / {totalMb:F1} MB";
-                            }
-                        });
-                    });
-
-                    contentData.Add(progressContent, "file", msg.FileName);
+                    contentData.Add(new StreamContent(fileStream), "file", msg.FileName);
 
                     if (SendButton != null)
                     {
                         SendButton.IsEnabled = false;
                         SendButton.Content = "⏳";
-                        UploadProgressBar.Visibility = Visibility.Visible;
-                        UploadProgressText.Visibility = Visibility.Visible;
-                        UploadProgressBar.Value = 0;
                     }
 
                     var response = await httpClient.PostAsync("https://vexingly-circle-proofs.ngrok-free.dev/upload", contentData);
@@ -475,15 +402,7 @@ namespace ChatClient
             };
             if (openFileDialog.ShowDialog() == true)
             {
-                string ext = Path.GetExtension(openFileDialog.FileName).ToLower();
-                if (ext == ".mp4" || ext == ".avi" || ext == ".mkv" || ext == ".wmv" || ext == ".mov")
-                {
-                    ShowPreview(openFileDialog.FileName, "Video");
-                }
-                else
-                {
-                    ShowPreview(openFileDialog.FileName, "File");
-                }
+                ShowPreview(openFileDialog.FileName, "File");
             }
         }
         
@@ -549,25 +468,15 @@ namespace ChatClient
                     PreviewImage.Source = bitmap;
                     PreviewImage.Visibility = Visibility.Visible;
                     PreviewFileIcon.Visibility = Visibility.Collapsed;
-                    PreviewVideoContainer.Visibility = Visibility.Collapsed;
                 } catch {
                     PreviewImage.Visibility = Visibility.Collapsed;
                     PreviewFileIcon.Visibility = Visibility.Visible;
-                    PreviewVideoContainer.Visibility = Visibility.Collapsed;
                 }
-            }
-            else if (type == "Video")
-            {
-                PreviewImage.Visibility = Visibility.Collapsed;
-                PreviewFileIcon.Visibility = Visibility.Collapsed;
-                PreviewVideoContainer.Visibility = Visibility.Visible;
-                PreviewVideo.Source = new Uri(filePath);
             }
             else
             {
                 PreviewImage.Visibility = Visibility.Collapsed;
                 PreviewFileIcon.Visibility = Visibility.Visible;
-                PreviewVideoContainer.Visibility = Visibility.Collapsed;
             }
             
             UpdateSendButton();
@@ -584,15 +493,12 @@ namespace ChatClient
             _pendingFileType = null;
             PreviewArea.Visibility = Visibility.Collapsed;
             PreviewImage.Source = null;
-            PreviewVideo.Source = null;
-            UploadProgressBar.Visibility = Visibility.Collapsed;
-            UploadProgressText.Visibility = Visibility.Collapsed;
             UpdateSendButton();
         }
         
-        private async void MessageElement_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private async void MessageImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (sender is FrameworkElement element && element.Tag is ChatMessageDtos msg)
+            if (sender is System.Windows.Controls.Image img && img.Tag is ChatMessageDtos msg)
             {
                 await DownloadAndOpenFile(msg);
             }

@@ -475,15 +475,7 @@ namespace ChatClient
             };
             if (openFileDialog.ShowDialog() == true)
             {
-                string ext = Path.GetExtension(openFileDialog.FileName).ToLower();
-                if (ext == ".mp4" || ext == ".avi" || ext == ".mkv" || ext == ".wmv" || ext == ".mov")
-                {
-                    ShowPreview(openFileDialog.FileName, "Video");
-                }
-                else
-                {
-                    ShowPreview(openFileDialog.FileName, "File");
-                }
+                ShowPreview(openFileDialog.FileName, "File");
             }
         }
         
@@ -549,25 +541,15 @@ namespace ChatClient
                     PreviewImage.Source = bitmap;
                     PreviewImage.Visibility = Visibility.Visible;
                     PreviewFileIcon.Visibility = Visibility.Collapsed;
-                    PreviewVideoContainer.Visibility = Visibility.Collapsed;
                 } catch {
                     PreviewImage.Visibility = Visibility.Collapsed;
                     PreviewFileIcon.Visibility = Visibility.Visible;
-                    PreviewVideoContainer.Visibility = Visibility.Collapsed;
                 }
-            }
-            else if (type == "Video")
-            {
-                PreviewImage.Visibility = Visibility.Collapsed;
-                PreviewFileIcon.Visibility = Visibility.Collapsed;
-                PreviewVideoContainer.Visibility = Visibility.Visible;
-                PreviewVideo.Source = new Uri(filePath);
             }
             else
             {
                 PreviewImage.Visibility = Visibility.Collapsed;
                 PreviewFileIcon.Visibility = Visibility.Visible;
-                PreviewVideoContainer.Visibility = Visibility.Collapsed;
             }
             
             UpdateSendButton();
@@ -584,7 +566,6 @@ namespace ChatClient
             _pendingFileType = null;
             PreviewArea.Visibility = Visibility.Collapsed;
             PreviewImage.Source = null;
-            PreviewVideo.Source = null;
             UploadProgressBar.Visibility = Visibility.Collapsed;
             UploadProgressText.Visibility = Visibility.Collapsed;
             UpdateSendButton();

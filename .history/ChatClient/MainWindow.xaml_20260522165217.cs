@@ -584,7 +584,6 @@ namespace ChatClient
             _pendingFileType = null;
             PreviewArea.Visibility = Visibility.Collapsed;
             PreviewImage.Source = null;
-            PreviewVideo.Source = null;
             UploadProgressBar.Visibility = Visibility.Collapsed;
             UploadProgressText.Visibility = Visibility.Collapsed;
             UpdateSendButton();

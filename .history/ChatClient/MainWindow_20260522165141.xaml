@@ -147,16 +147,7 @@
                 <!-- Type: Image -->
                 <DataTrigger Binding="{Binding IsImage}" Value="True">
                     <Setter TargetName="MessageText" Property="Visibility" Value="Collapsed"/>
-                    <Setter TargetName="ImageContainer" Property="Visibility" Value="Visible"/>
                     <Setter TargetName="MessageImage" Property="Visibility" Value="Visible"/>
-                    <Setter TargetName="BubbleBorder" Property="Background" Value="Transparent"/>
-                    <Setter TargetName="BubbleBorder" Property="Padding" Value="0"/>
-                </DataTrigger>
-                
-                <!-- Type: Video -->
-                <DataTrigger Binding="{Binding IsVideo}" Value="True">
-                    <Setter TargetName="MessageText" Property="Visibility" Value="Collapsed"/>
-                    <Setter TargetName="VideoContainer" Property="Visibility" Value="Visible"/>
                     <Setter TargetName="BubbleBorder" Property="Background" Value="Transparent"/>
                     <Setter TargetName="BubbleBorder" Property="Padding" Value="0"/>
                 </DataTrigger>
@@ -164,7 +155,6 @@
                 <!-- Type: Sticker -->
                 <DataTrigger Binding="{Binding IsSticker}" Value="True">
                     <Setter TargetName="MessageText" Property="Visibility" Value="Collapsed"/>
-                    <Setter TargetName="ImageContainer" Property="Visibility" Value="Visible"/>
                     <Setter TargetName="MessageImage" Property="Visibility" Value="Visible"/>
                     <Setter TargetName="MessageImage" Property="MaxWidth" Value="120"/>
                     <Setter TargetName="MessageImage" Property="MaxHeight" Value="120"/>
@@ -251,9 +241,6 @@
                     </Grid.ColumnDefinitions>
                     
                     <Image x:Name="PreviewImage" Grid.Column="0" MaxHeight="60" MaxWidth="60" Stretch="Uniform" Margin="0,0,8,0" Visibility="Collapsed"/>
-                    <Border x:Name="PreviewVideoContainer" Grid.Column="0" MaxHeight="60" MaxWidth="60" Visibility="Collapsed" Margin="0,0,8,0" CornerRadius="4" ClipToBounds="True">
-                        <MediaElement x:Name="PreviewVideo" Stretch="Uniform" LoadedBehavior="Pause" Volume="0"/>
-                    </Border>
                     <TextBlock x:Name="PreviewFileIcon" Grid.Column="0" Text="📄" FontSize="36" VerticalAlignment="Center" Margin="0,0,8,0" Visibility="Collapsed"/>
                     
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">

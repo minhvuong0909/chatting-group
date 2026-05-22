@@ -85,20 +85,13 @@
                             <TextBlock x:Name="MessageText" Text="{Binding Content}" FontSize="15" Foreground="Black" TextWrapping="Wrap" LineHeight="20" Visibility="Visible"/>
                             
                             <!-- Image Content -->
-                            <Grid x:Name="ImageContainer" Visibility="Collapsed" Cursor="Hand" MouseLeftButtonDown="MessageElement_MouseLeftButtonDown" Tag="{Binding}" Background="Transparent">
-                                <Image x:Name="MessageImage" Source="{Binding DisplayImageBase64, Converter={StaticResource Base64Converter}}" MaxWidth="250" MaxHeight="250" Stretch="Uniform" Margin="0,4,0,0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <Grid>
+                                <Image x:Name="MessageImage" Source="{Binding DisplayImageBase64, Converter={StaticResource Base64Converter}}" MaxWidth="250" MaxHeight="250" Stretch="Uniform" Visibility="Collapsed" Margin="0,4,0,0" RenderOptions.BitmapScalingMode="HighQuality" Cursor="Hand" MouseLeftButtonDown="MessageImage_MouseLeftButtonDown" Tag="{Binding}"/>
+                                <Border x:Name="PlayIconOverlay" Visibility="Collapsed" Background="#80000000" Width="40" Height="40" CornerRadius="20" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False">
+                                    <TextBlock Text="▶" Foreground="White" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="3,0,0,0"/>
+                                </Border>
                             </Grid>
                             
-                            <!-- Video Content -->
-                            <Border x:Name="VideoContainer" Visibility="Collapsed" MaxWidth="250" MaxHeight="250" CornerRadius="8" ClipToBounds="True" Margin="0,4,0,0">
-                                <Grid Cursor="Hand" MouseLeftButtonDown="MessageElement_MouseLeftButtonDown" Tag="{Binding}" Background="Transparent">
-                                    <MediaElement x:Name="MessageVideo" Source="{Binding FileUrl}" Stretch="Uniform" LoadedBehavior="Pause" Volume="0"/>
-                                    <Border Background="#80000000" Width="40" Height="40" CornerRadius="20" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False">
-                                        <TextBlock Text="▶" Foreground="White" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="3,0,0,0"/>
-                                    </Border>
-                                </Grid>
-                            </Border>
-
                             <!-- File Content -->
                             <Button x:Name="FileButton" Visibility="Collapsed" Background="#F0F2F5" BorderThickness="1" BorderBrush="#D1D5DB" Padding="8" Cursor="Hand" Click="FileButton_Click" Tag="{Binding}">
                                 <Button.Template>
@@ -147,16 +140,7 @@
                 <!-- Type: Image -->
                 <DataTrigger Binding="{Binding IsImage}" Value="True">
                     <Setter TargetName="MessageText" Property="Visibility" Value="Collapsed"/>
-                    <Setter TargetName="ImageContainer" Property="Visibility" Value="Visible"/>
                     <Setter TargetName="MessageImage" Property="Visibility" Value="Visible"/>
-                    <Setter TargetName="BubbleBorder" Property="Background" Value="Transparent"/>
-                    <Setter TargetName="BubbleBorder" Property="Padding" Value="0"/>
-                </DataTrigger>
-                
-                <!-- Type: Video -->
-                <DataTrigger Binding="{Binding IsVideo}" Value="True">
-                    <Setter TargetName="MessageText" Property="Visibility" Value="Collapsed"/>
-                    <Setter TargetName="VideoContainer" Property="Visibility" Value="Visible"/>
                     <Setter TargetName="BubbleBorder" Property="Background" Value="Transparent"/>
                     <Setter TargetName="BubbleBorder" Property="Padding" Value="0"/>
                 </DataTrigger>
@@ -164,7 +148,6 @@
                 <!-- Type: Sticker -->
                 <DataTrigger Binding="{Binding IsSticker}" Value="True">
                     <Setter TargetName="MessageText" Property="Visibility" Value="Collapsed"/>
-                    <Setter TargetName="ImageContainer" Property="Visibility" Value="Visible"/>
                     <Setter TargetName="MessageImage" Property="Visibility" Value="Visible"/>
                     <Setter TargetName="MessageImage" Property="MaxWidth" Value="120"/>
                     <Setter TargetName="MessageImage" Property="MaxHeight" Value="120"/>
@@ -251,9 +234,6 @@
                     </Grid.ColumnDefinitions>
                     
                     <Image x:Name="PreviewImage" Grid.Column="0" MaxHeight="60" MaxWidth="60" Stretch="Uniform" Margin="0,0,8,0" Visibility="Collapsed"/>
-                    <Border x:Name="PreviewVideoContainer" Grid.Column="0" MaxHeight="60" MaxWidth="60" Visibility="Collapsed" Margin="0,0,8,0" CornerRadius="4" ClipToBounds="True">
-                        <MediaElement x:Name="PreviewVideo" Stretch="Uniform" LoadedBehavior="Pause" Volume="0"/>
-                    </Border>
                     <TextBlock x:Name="PreviewFileIcon" Grid.Column="0" Text="📄" FontSize="36" VerticalAlignment="Center" Margin="0,0,8,0" Visibility="Collapsed"/>
                     
                     <StackPanel Grid.Column="1" VerticalAlignment="Center">

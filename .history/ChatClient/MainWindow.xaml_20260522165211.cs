@@ -549,25 +549,15 @@ namespace ChatClient
                     PreviewImage.Source = bitmap;
                     PreviewImage.Visibility = Visibility.Visible;
                     PreviewFileIcon.Visibility = Visibility.Collapsed;
-                    PreviewVideoContainer.Visibility = Visibility.Collapsed;
                 } catch {
                     PreviewImage.Visibility = Visibility.Collapsed;
                     PreviewFileIcon.Visibility = Visibility.Visible;
-                    PreviewVideoContainer.Visibility = Visibility.Collapsed;
                 }
-            }
-            else if (type == "Video")
-            {
-                PreviewImage.Visibility = Visibility.Collapsed;
-                PreviewFileIcon.Visibility = Visibility.Collapsed;
-                PreviewVideoContainer.Visibility = Visibility.Visible;
-                PreviewVideo.Source = new Uri(filePath);
             }
             else
             {
                 PreviewImage.Visibility = Visibility.Collapsed;
                 PreviewFileIcon.Visibility = Visibility.Visible;
-                PreviewVideoContainer.Visibility = Visibility.Collapsed;
             }
             
             UpdateSendButton();
@@ -584,7 +574,6 @@ namespace ChatClient
             _pendingFileType = null;
             PreviewArea.Visibility = Visibility.Collapsed;
             PreviewImage.Source = null;
-            PreviewVideo.Source = null;
             UploadProgressBar.Visibility = Visibility.Collapsed;
             UploadProgressText.Visibility = Visibility.Collapsed;
             UpdateSendButton();
