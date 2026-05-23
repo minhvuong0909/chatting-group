@@ -615,27 +615,25 @@ namespace ChatClient
             try
             {
                 string fileName = msg.FileName ?? (msg.IsImage ? "preview_image.jpg" : "preview_video.mp4");
-                string tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), fileName);
+                string tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"chat_preview_{Guid.NewGuid()}_{fileName}");
 
                 System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
 
                 if (!string.IsNullOrEmpty(msg.FileUrl))
                 {
-                    // Tải xuống file (video/ảnh lớn) vào Temp để mở
-                    if (!System.IO.File.Exists(tempPath)) 
-                    {
-                        using var httpClient = new HttpClient();
-                        httpClient.Timeout = Timeout.InfiniteTimeSpan;
-                        using var response = await httpClient.GetAsync(msg.FileUrl, HttpCompletionOption.ResponseHeadersRead);
-                        response.EnsureSuccessStatusCode();
-                        await using var streamToReadFrom = await response.Content.ReadAsStreamAsync();
-                        await using var streamToWriteTo = System.IO.File.Open(tempPath, System.IO.FileMode.Create);
-                        await streamToReadFrom.CopyToAsync(streamToWriteTo);
-                    }
+                    using var httpClient = new HttpClient();
+                    httpClient.Timeout = Timeout.InfiniteTimeSpan;
+                    using var response = await httpClient.GetAsync(msg.FileUrl, HttpCompletionOption.ResponseHeadersRead);
+                    response.EnsureSuccessStatusCode();
+                    await using var streamToReadFrom = await response.Content.ReadAsStreamAsync();
+                    await using var streamToWriteTo = System.IO.File.Open(tempPath, System.IO.FileMode.Create);
+                    await streamToReadFrom.CopyToAsync(streamToWriteTo);
                 }
                 else if (!string.IsNullOrEmpty(msg.FileData) || !string.IsNullOrEmpty(msg.DisplayImageBase64))
                 {
-                    string base64 = string.IsNullOrEmpty(msg.FileData) ? msg.DisplayImageBase64 : msg.FileData;
+                    string? base64 = string.IsNullOrEmpty(msg.FileData) ? msg.DisplayImageBase64 : msg.FileData;
+                    if (string.IsNullOrEmpty(base64)) return;
+
                     byte[] fileBytes = Convert.FromBase64String(base64);
                     await System.IO.File.WriteAllBytesAsync(tempPath, fileBytes);
                 }

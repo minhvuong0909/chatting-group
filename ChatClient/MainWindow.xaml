@@ -90,9 +90,9 @@
                             </Grid>
                             
                             <!-- Video Content -->
-                            <Border x:Name="VideoContainer" Visibility="Collapsed" MaxWidth="250" MaxHeight="250" CornerRadius="8" ClipToBounds="True" Margin="0,4,0,0">
-                                <Grid Cursor="Hand" MouseLeftButtonDown="MessageElement_MouseLeftButtonDown" Tag="{Binding}" Background="Transparent">
-                                    <MediaElement x:Name="MessageVideo" Source="{Binding FileUrl}" Stretch="Uniform" LoadedBehavior="Pause" ScrubbingEnabled="True" Volume="0" MediaOpened="MessageVideo_MediaOpened"/>
+                            <Border x:Name="VideoContainer" Visibility="Collapsed" MaxWidth="250" MaxHeight="250" CornerRadius="8" ClipToBounds="True" Margin="0,4,0,0" Cursor="Hand" MouseLeftButtonDown="MessageElement_MouseLeftButtonDown" Tag="{Binding}" Background="Transparent">
+                                <Grid Background="Transparent">
+                                    <MediaElement x:Name="MessageVideo" Source="{Binding FileUrl}" Stretch="Uniform" LoadedBehavior="Pause" ScrubbingEnabled="True" Volume="0" MediaOpened="MessageVideo_MediaOpened" IsHitTestVisible="False"/>
                                     <Border Background="#80000000" Width="40" Height="40" CornerRadius="20" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False">
                                         <TextBlock Text="▶" Foreground="White" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="3,0,0,0"/>
                                     </Border>
