@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Net.Sockets;
@@ -327,7 +327,7 @@ namespace ChatClient
                         UploadProgressBar.Value = 0;
                     }
 
-                    var response = await httpClient.PostAsync($"http://{_serverHost}:5001/upload", contentData);
+                    var response = await httpClient.PostAsync("https://172.20.10.3:5000/upload", contentData);
                     if (response.IsSuccessStatusCode)
                     {
                         var responseString = await response.Content.ReadAsStringAsync();

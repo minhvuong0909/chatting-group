@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -87,8 +87,7 @@ namespace ChatServer
                 
                 if (file == null || file.Length == 0) return Results.BadRequest("Empty file");
                 
-                string originalFileName = Path.GetFileName(file.FileName);
-                string uniqueName = Guid.NewGuid().ToString() + "_" + originalFileName;
+                string uniqueName = Guid.NewGuid().ToString() + "_" + file.FileName;
                 string physicalPath = Path.Combine(uploadPath, uniqueName);
                 
                 // Lưu streaming xuống ổ cứng 
@@ -97,10 +96,10 @@ namespace ChatServer
                     await file.CopyToAsync(stream);
                 }
                 
-                // Tra ve dia chi LAN khi request upload den tu localhost de cac may khac tai duoc.
-                string fileUrl = BuildFileUrl(GetFileServerBaseUrl(request), uniqueName);
-                Console.WriteLine($"[HTTP] Đã nhận file {originalFileName} ({file.Length} bytes)");
-                return Results.Ok(new { Url = fileUrl, Size = file.Length, Name = originalFileName });
+                // Trả về đường dẫn để người dùng TCP tải
+                string fileUrl = $"https://172.20.10.3:5000/files/{uniqueName}";
+                Console.WriteLine($"[HTTP] Đã nhận file {file.FileName} ({file.Length} bytes)");
+                return Results.Ok(new { Url = fileUrl, Size = file.Length, Name = file.FileName });
             });
 
             // Chạy ngầm HTTP server
@@ -174,94 +173,6 @@ namespace ChatServer
             return port;
         }
 
-        static string GetFileServerBaseUrl(HttpRequest request)
-        {
-            string host = request.Host.Host;
-            if (string.IsNullOrWhiteSpace(host) || IsLocalOnlyHost(host))
-            {
-                return $"http://{GetLocalNetworkAddress()}:5001";
-            }
-
-            string scheme = request.Headers.TryGetValue("X-Forwarded-Proto", out var forwardedProto)
-                ? forwardedProto.ToString().Split(',')[0].Trim()
-                : request.Scheme;
-
-            return $"{scheme}://{request.Host}";
-        }
-
-        static string GetFileServerHost(TcpClient client)
-        {
-            if (client.Client.LocalEndPoint is IPEndPoint localEndpoint &&
-                localEndpoint.Address.AddressFamily == AddressFamily.InterNetwork &&
-                !IPAddress.IsLoopback(localEndpoint.Address) &&
-                !localEndpoint.Address.Equals(IPAddress.Any))
-            {
-                return localEndpoint.Address.ToString();
-            }
-
-            return GetLocalNetworkAddress();
-        }
-
-        static string GetLocalNetworkAddress()
-        {
-            try
-            {
-                var host = Dns.GetHostEntry(Dns.GetHostName());
-                var address = host.AddressList.FirstOrDefault(ip =>
-                    ip.AddressFamily == AddressFamily.InterNetwork &&
-                    !IPAddress.IsLoopback(ip) &&
-                    !ip.Equals(IPAddress.Any));
-
-                if (address != null)
-                {
-                    return address.ToString();
-                }
-            }
-            catch
-            {
-                // Fall through to localhost when no LAN address can be found.
-            }
-
-            return "127.0.0.1";
-        }
-
-        static bool IsLocalOnlyHost(string host)
-        {
-            return host.Equals("localhost", StringComparison.OrdinalIgnoreCase) ||
-                   host.Equals("127.0.0.1", StringComparison.OrdinalIgnoreCase) ||
-                   host.Equals("0.0.0.0", StringComparison.OrdinalIgnoreCase) ||
-                   host.Equals("::1", StringComparison.OrdinalIgnoreCase);
-        }
-
-        static string BuildFileUrl(string baseUrl, string fileName)
-        {
-            return $"{baseUrl.TrimEnd('/')}/files/{Uri.EscapeDataString(fileName)}";
-        }
-
-        static string? NormalizeFileUrl(string? storedPath, string host)
-        {
-            if (string.IsNullOrWhiteSpace(storedPath))
-            {
-                return null;
-            }
-
-            if (Uri.TryCreate(storedPath, UriKind.Absolute, out var uri))
-            {
-                if (IsLocalOnlyHost(uri.Host))
-                {
-                    return $"http://{host}:5001{uri.PathAndQuery}";
-                }
-
-                return storedPath;
-            }
-
-            string fileName = storedPath.StartsWith("/files/", StringComparison.OrdinalIgnoreCase)
-                ? storedPath.Substring("/files/".Length)
-                : storedPath;
-
-            return BuildFileUrl($"http://{host}:5001", fileName);
-        }
-
         static async Task HandleClientAsync(TcpClient client)
         {
             NetworkStream stream = client.GetStream();
@@ -287,10 +198,9 @@ namespace ChatServer
                 
                 Console.WriteLine($"[Lịch sử] Đã lấy {history.Count} tin nhắn từ DB cho Client mới.");
 
-                string fileServerHost = GetFileServerHost(client);
-
                 foreach (var msg in history)
                 {
+                    string fileUrl = msg.File?.StoragePath ?? "";
                     string messageType = msg.Type;
                     // Chuyển Enum DB sang DTO
                     if (messageType == "text") messageType = "Text";
@@ -303,11 +213,11 @@ namespace ChatServer
                     var dto = new ChatMessageDtos
                     {
                         SenderName = msg.Sender.Username,
-                        Content = msg.Content ?? "",
+                        Content = msg.Content,
                         Timestamp = msg.SentAt.ToLocalTime(),
                         MessageType = messageType,
                         FileName = msg.File?.Filename,
-                        FileUrl = msg.File != null ? NormalizeFileUrl(msg.File.StoragePath, fileServerHost) : null
+                        FileUrl = msg.File != null ? $"https://172.20.10.3:5000/files/{msg.File.Filename}" : null
                     };
                     string json = JsonSerializer.Serialize(dto);
                     await writer.WriteLineAsync(json);
